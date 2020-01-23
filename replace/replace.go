@@ -9,8 +9,9 @@ func ReplaceFieldKeysInDocument(a map[string]interface{}, replaceMap map[string]
 	var modifiedCount int64
 	for k, v := range a {
 		newKey := k
-		if len(replaceMap[k]) > 0 {
-			newKey = replaceMap[k]
+		replaceKey := replaceMap[k]
+		if len(replaceKey) > 0 && replaceKey != k {
+			newKey = replaceKey
 			modifiedCount += 1
 		}
 		switch v.(type) {
