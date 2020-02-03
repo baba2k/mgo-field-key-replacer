@@ -44,9 +44,17 @@ func NewMongoDB(uri, databaseName string) (MongoDB, error) {
 func (s *service) ReplaceKeysInDocument(collection string, replaceMap map[string]string) (int64, int64, error) {
 	var modifiedCountDoc int64
 	var modifiedCountKey int64
-	c := s.client.Database(s.databaseName).Collection(collection)
 	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	session, err := s.client.StartSession()
+	if err != nil {
+		return modifiedCountKey, modifiedCountDoc, err
+	}
+	defer session.EndSession(ctx)
+	if err = session.StartTransaction(); err != nil {
+		return modifiedCountKey, modifiedCountDoc, err
+	}
 
+	c := session.Client().Database(s.databaseName).Collection(collection)
 	cur, err := c.Find(ctx, bson.M{})
 	if err != nil {
 		return modifiedCountKey, modifiedCountDoc, err
