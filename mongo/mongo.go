@@ -21,10 +21,10 @@ type service struct {
 	client       *mongo.Client
 }
 
-func NewMongoDB(uri, databaseName string) (MongoDB, error) {
+func NewMongoDB(opt options.ClientOptions, databaseName string) (MongoDB, error) {
 	// connect
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	client, err := mongo.Connect(ctx, &opt)
 	if err != nil {
 		return nil, errors.New("can not connect: " + err.Error())
 	}
