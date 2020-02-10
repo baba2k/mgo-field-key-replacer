@@ -62,7 +62,9 @@ func (s *service) ReplaceKeysInDocument(collection string, replaceMap map[string
 	}
 	defer cur.Close(ctx)
 
+	i := 0
 	for cur.Next(ctx) {
+		i++
 		var result map[string]interface{}
 		err := cur.Decode(&result)
 		if err != nil {
@@ -78,8 +80,8 @@ func (s *service) ReplaceKeysInDocument(collection string, replaceMap map[string
 			modifiedCountDoc += res.ModifiedCount
 			modifiedCountKey += count
 		}
-		if modifiedCountDoc%100 == 0 {
-			log.Debug("Modified ", modifiedCountDoc, " documents")
+		if modifiedCountDoc > 0 && modifiedCountDoc%1000 == 0 {
+			log.Debug(i, " documents processed and ", modifiedCountDoc, " modified")
 		}
 	}
 	return modifiedCountKey, modifiedCountDoc, err
