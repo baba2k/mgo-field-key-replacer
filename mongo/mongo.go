@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/baba2k/mgo-field-key-replacer/replace"
@@ -25,14 +26,13 @@ func NewMongoDB(uri, databaseName string) (MongoDB, error) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
-		return nil, err
+		return nil, errors.New("can not connect: " + err.Error())
 	}
 
 	// test connection
-	ctx, _ = context.WithTimeout(context.Background(), 2*time.Second)
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		return nil, err
+		return nil, errors.New("can not ping: " + err.Error())
 	}
 
 	return &service{
