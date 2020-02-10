@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/baba2k/mgo-field-key-replacer/replace"
+	"github.com/labstack/gommon/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -76,7 +77,9 @@ func (s *service) ReplaceKeysInDocument(collection string, replaceMap map[string
 			}
 			modifiedCountDoc += res.ModifiedCount
 			modifiedCountKey += count
-
+		}
+		if modifiedCountDoc%100 == 0 {
+			log.Debug("Modified ", modifiedCountDoc, " documents")
 		}
 	}
 	return modifiedCountKey, modifiedCountDoc, err
